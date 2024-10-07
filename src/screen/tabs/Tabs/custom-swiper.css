@@ -1,0 +1,11 @@
+.swiper-button-next,
+.swiper-button-prev {
+    width: 20px;   /* Ajustez la largeur des flèches */
+    height: 20px;  /* Ajustez la hauteur des flèches */
+    top: 65%;      /* Place la flèche au milieu verticalement */
+}
+
+.swiper-button-next:after,
+.swiper-button-prev:after {
+    font-size: 30px;  /* Ajustez la taille de l'icône des flèches */
+}

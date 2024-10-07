@@ -1,0 +1,126 @@
+:root {
+    --background-color-light: #ffffff;
+    --text-color-light: #000000;
+    --button-bg-light: #f0f0f0;
+    --button-text-light: #000000;
+    --border-color-light: #cccccc;
+    
+    --background-color-dark: #333333;
+    --text-color-dark: #ffffff;
+    --button-bg-dark: #444444;
+    --button-text-dark: #ffffff;
+    --border-color-dark: #555555;
+}
+
+/* Styles pour le thème clair */
+.light-theme {
+    --background-color: var(--background-color-light);
+    --text-color: var(--text-color-light);
+    --button-bg: var(--button-bg-light);
+    --button-text: var(--button-text-light);
+    --border-color: var(--border-color-light);
+}
+
+/* Styles pour le thème sombre */
+.dark-theme {
+    --background-color: var(--background-color-dark);
+    --text-color: var(--text-color-dark);
+    --button-bg: var(--button-bg-dark);
+    --button-text: var(--button-text-dark);
+    --border-color: var(--border-color-dark);
+}
+
+/* Styles pour la structure de l'édition du marker */
+.edit-marker-container {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 600px;
+    margin: 0 auto;
+    width: 100%;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+.edit-marker-container h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.edit-marker-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.edit-marker-form label {
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: var(--text-color);
+}
+
+.edit-marker-form input,
+.edit-marker-form textarea,
+.edit-marker-form select {
+    padding: 10px;
+    border-radius: 4px;
+    background-color: var(--button-bg);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+}
+
+.edit-marker-form button {
+    padding: 10px 20px;
+    background-color: var(--button-bg);
+    color: var(--button-text);
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.edit-marker-form button:hover {
+    background-color: var(--button-bg-light);
+}
+
+.edit-marker-loading {
+    text-align: center;
+    font-size: 18px;
+    color: var(--text-color);
+}
+
+.edit-marker-rating {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.edit-marker-rating label {
+    font-weight: bold;
+}
+
+.image-container {
+    position: relative;
+}
+
+.remove-image-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: red;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.remove-image-btn:hover {
+    background-color: darkred;
+}

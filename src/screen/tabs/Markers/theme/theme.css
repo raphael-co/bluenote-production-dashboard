@@ -1,0 +1,39 @@
+.cardsRow {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    width: 100%;
+    justify-content: space-between;
+    align-items: stretch;
+    /* Pour s'assurer que les éléments remplissent la hauteur de la ligne */
+}
+
+.cardsRowcellules {
+    flex: 1;
+    /* Permet à chaque cellule de prendre une proportion égale de l'espace disponible */
+    min-width: 0;
+    /* Pour s'assurer que les cellules peuvent se réduire si nécessaire */
+}
+
+.chart {
+    width: 100%;
+    /* Assurez-vous que le graphique prend toute la largeur disponible */
+    height: 100%;
+    /* Permet au graphique d'adapter sa hauteur en fonction de sa largeur */
+    min-height: 385px;
+
+}
+
+@media (max-width: 900px) {
+    .cardsRow {
+        flex-direction: column;
+        /* Les éléments passeront en colonne sur les petits écrans */
+    }
+
+    .chart {
+        aspect-ratio: 16 / 9;
+        width: 100%;
+        /* S'assure que le graphique s'adapte à la largeur disponible sur les petits écrans */
+        min-height: 300px;
+    }
+}

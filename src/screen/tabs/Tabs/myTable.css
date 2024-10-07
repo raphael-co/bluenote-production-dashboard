@@ -1,0 +1,15 @@
+.min-max-cell {
+    min-width: 120px;
+    max-width: 300px;
+    min-height: 50px;
+    max-height: 100px;
+    overflow: hidden; /* Empêche le débordement de contenu */
+}
+
+.min-max-cell-large {
+    /* min-width: 100px; */
+    min-width: 300px;
+    min-height: 50px;
+    max-height: 100px;
+    overflow: hidden; /* Empêche le débordement de contenu */
+}
