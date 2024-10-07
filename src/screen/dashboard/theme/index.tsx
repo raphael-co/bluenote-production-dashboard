@@ -53,7 +53,14 @@ export const lightTheme = {
         width: '20px',
         height: '20px',
         color: '#000'
-    }
+    },
+    buttonContainer: {
+        display: 'flex' as 'flex',
+        gap: '10px',
+        justifyContent: 'center' as 'center',
+        alignItems: 'center' as 'center',
+        marginTop: '20px',
+    },
 };
 
 export const darkTheme = {
@@ -77,5 +84,15 @@ export const darkTheme = {
         boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
         marginBottom: '20px',
         // height: '600px',
+    },
+
+    buttonPrimary: {
+        backgroundColor: '#bb86fc',
+        color: '#fff',
+        padding: '10px 20px',
+        border: 'none',
+        borderRadius: '4px',
+        cursor: 'pointer',
+        marginTop: '20px',
     },
 };

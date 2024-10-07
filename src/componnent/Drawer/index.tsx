@@ -446,17 +446,39 @@ const CustomDrawer: React.FC<CustomDrawerProps> = ({ mobileOpen, handleDrawerTog
                     drawerContent
 
                 ) : (
-                    <List>
-                        <ListItemButton
-                            // onClick={() => disconnect()}
-                            style={location.pathname === '/login' ? activeStyle : { color: currentTheme.iconColor }}
-                        >
-                            <ListItemIcon style={{ minWidth: 'auto', ...(location.pathname === '/login' ? activeStyle : { color: currentTheme.iconColor }) }}>
-                                <LoginIcon />
-                            </ListItemIcon>
-                            {<ListItemText style={{ marginLeft: collapsed ? '20px' : '20px', transition: 'display 0.3s' }} primary="Login" />}
-                        </ListItemButton>
-                    </List>
+                    <div style={{ backgroundColor: currentTheme.backgroundColorHeader, color: currentTheme.color }}>
+                        <Toolbar style={{ padding: 0 }}>
+                            <Toolbar>
+                                {/* Collapse button hidden on mobile */}
+                                <IconButton
+                                    onClick={handleCollapseToggle}
+                                    sx={{ position: 'absolute', bottom: '10px', left: '10px', display: { xs: 'none', sm: 'block' }, zIndex: 100 }}
+                                >
+                                    {collapsed ? (
+                                        <div style={{ width: '30px', height: '30px', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 100 }}>
+                                            <CustomMenuIconOpen color={currentTheme.iconColor} />
+                                        </div>
+                                    ) : (
+                                        <div style={{ width: '30px', height: '30px', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 100 }}>
+                                            <CustomMenuIconClose color={currentTheme.iconColorActive} />
+                                        </div>
+                                    )}
+                                </IconButton>
+                            </Toolbar>
+                        </Toolbar>
+                        <Divider />
+                        <List>
+                            <ListItemButton
+                                onClick={() => navigate('/login')}
+                                style={location.pathname === '/login' ? activeStyle : { color: currentTheme.iconColor }}
+                            >
+                                <ListItemIcon style={{ minWidth: 'auto', ...(location.pathname === '/login' ? activeStyle : { color: currentTheme.iconColor }) }}>
+                                    <LoginIcon />
+                                </ListItemIcon>
+                                {<ListItemText style={{ marginLeft: collapsed ? '20px' : '20px', transition: 'display 0.3s' }} primary="Login" />}
+                            </ListItemButton>
+                        </List>
+                    </div>
                 )}
             </Drawer>
 
@@ -481,17 +503,39 @@ const CustomDrawer: React.FC<CustomDrawerProps> = ({ mobileOpen, handleDrawerTog
                     drawerContent
 
                 ) : (
-                    <List>
-                        <ListItemButton
-                            // onClick={() => disconnect()}
-                            style={location.pathname === '/login' ? activeStyle : { color: currentTheme.iconColor }}
-                        >
-                            <ListItemIcon style={{ minWidth: 'auto', ...(location.pathname === '/login' ? activeStyle : { color: currentTheme.iconColor }) }}>
-                                <LoginIcon />
-                            </ListItemIcon>
-                            {<ListItemText style={{ marginLeft: collapsed ? '20px' : '20px', transition: 'display 0.3s' }} primary="Login" />}
-                        </ListItemButton>
-                    </List>
+                    <div style={{ backgroundColor: currentTheme.backgroundColorHeader, color: currentTheme.color }}>
+                        <Toolbar style={{ padding: 0 }}>
+                            <Toolbar>
+                                {/* Collapse button hidden on mobile */}
+                                <IconButton
+                                    onClick={handleCollapseToggle}
+                                    sx={{ position: 'absolute', bottom: '10px', left: '10px', display: { xs: 'none', sm: 'block' }, zIndex: 100 }}
+                                >
+                                    {collapsed ? (
+                                        <div style={{ width: '30px', height: '30px', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 100 }}>
+                                            <CustomMenuIconOpen color={currentTheme.iconColor} />
+                                        </div>
+                                    ) : (
+                                        <div style={{ width: '30px', height: '30px', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 100 }}>
+                                            <CustomMenuIconClose color={currentTheme.iconColorActive} />
+                                        </div>
+                                    )}
+                                </IconButton>
+                            </Toolbar>
+                        </Toolbar>
+                        <Divider />
+                        <List>
+                            <ListItemButton
+                                onClick={() => navigate('/login')}
+                                style={location.pathname === '/login' ? activeStyle : { color: currentTheme.iconColor }}
+                            >
+                                <ListItemIcon style={{ minWidth: 'auto', ...(location.pathname === '/login' ? activeStyle : { color: currentTheme.iconColor }) }}>
+                                    <LoginIcon />
+                                </ListItemIcon>
+                                {<ListItemText style={{ marginLeft: collapsed ? '20px' : '20px', transition: 'display 0.3s' }} primary="Login" />}
+                            </ListItemButton>
+                        </List>
+                    </div>
                 )}
             </Drawer>
         </>

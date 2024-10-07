@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import './App.css';
 import 'react-markdown-editor-lite/lib/index.css';
 import { AuthProvider } from './context/AuthContext';
@@ -23,15 +23,14 @@ import Markers from './screen/tabs/Markers';
 import AnnouncementsTable from './screen/tabs/Announcements';
 import MarkersReports from './screen/reports/markers';
 import Documentation from './screen/documentation';
+import HomeScreen from './screen/home';
 
+import { useNavigate } from 'react-router-dom';
 
 const AppContent: React.FC = () => {
   const { theme, toggleTheme, mobileOpen, collapsed, handleDrawerToggle, handleCollapseToggle, drawerWidth, collapsedDrawerWidth } = useTheme();
   const currentTheme = theme === 'light' ? lightTheme : darkTheme;
-  // const [mobileOpen, setMobileOpen] = useState(false);
-  // const [collapsed, setCollapsed] = useState(true);
-  // const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
-  // const handleCollapseToggle = () => setCollapsed(!collapsed);
+  const location = useLocation();
 
   const handleThemeChange = () => {
     toggleTheme();
@@ -51,6 +50,12 @@ const AppContent: React.FC = () => {
 
   // const drawerWidth = 240;
   // const collapsedDrawerWidth = 60;
+  const navigate = useNavigate();
+
+  const activeStyle = {
+    color: currentTheme.iconColorActive,
+  };
+
 
   return (
     <Box sx={{ display: 'flex', width: '100%', backgroundColor: currentTheme.backgroundColor }}>
@@ -74,7 +79,17 @@ const AppContent: React.FC = () => {
           >
             <MenuIcon />
           </IconButton>
-          <Typography style={{ width: '100%' }} variant="h5" noWrap component="div">
+          <Typography
+            style={
+              location.pathname === '/'
+                ? { ...activeStyle, flexGrow: 1, minWidth: 'fit-content' }
+                : { color: currentTheme.iconColor, width: '500px', cursor: 'pointer', flexGrow: 1, minWidth: 'fit-content' }
+            }
+            variant="h5"
+            noWrap
+            component="div"
+            onClick={() => navigate('/')}
+          >
             Map Point
           </Typography>
           <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end' }}>
@@ -83,6 +98,7 @@ const AppContent: React.FC = () => {
             </Button>
           </div>
         </Toolbar>
+
       </AppBar>
 
 
@@ -114,8 +130,9 @@ const AppContent: React.FC = () => {
         <Toolbar />
         <div style={{ width: '100%', height: '100%', overflow: 'hidden' }}>
           <Routes>
+            <Route path="/" element={<HomeScreen />} />
             <Route path="/login" element={<LoginPage />} />
-            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
             <Route path="/reports/users" element={<ProtectedRoute><UsersReports /></ProtectedRoute>} />
             <Route path="/tabs/users" element={<ProtectedRoute><Users /></ProtectedRoute>} />
             <Route path="/tabs/markers" element={<ProtectedRoute><Markers /></ProtectedRoute>} />
