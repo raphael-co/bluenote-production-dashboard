@@ -186,10 +186,6 @@ const UserStat: React.FC = () => {
         }
         : null;
 
-    const handleLogout = () => {
-        logout();
-    };
-
     return (
 
         <div style={currentTheme.container}>

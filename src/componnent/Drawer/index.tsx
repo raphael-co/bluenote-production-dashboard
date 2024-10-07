@@ -28,6 +28,9 @@ import LayersIcon from '@mui/icons-material/Layers';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 
+import LoginIcon from '@mui/icons-material/Login';
+import LogoutIcon from '@mui/icons-material/Logout';
+
 interface CustomDrawerProps {
     mobileOpen: boolean;
     handleDrawerToggle: () => void;
@@ -38,7 +41,7 @@ interface CustomDrawerProps {
 const CustomDrawer: React.FC<CustomDrawerProps> = ({ mobileOpen, handleDrawerToggle, collapsed, handleCollapseToggle }) => {
     const { theme, drawerWidth, collapsedDrawerWidth } = useTheme();
     const navigate = useNavigate();
-    const { token, realodingDrawerDoc } = useAuth();
+    const { token, realodingDrawerDoc, isAuthenticated, logout } = useAuth();
     const location = useLocation();
     const currentTheme = theme === 'light' ? lightTheme : darkTheme;
 
@@ -90,6 +93,16 @@ const CustomDrawer: React.FC<CustomDrawerProps> = ({ mobileOpen, handleDrawerTog
     };
 
     const selectedTitle = getTitleFromUrl();
+
+
+    const handleLogout = () => {
+        const confirmLogout = window.confirm('Êtes-vous sûr de vouloir vous déconnecter ?');
+
+        if (confirmLogout) {
+            logout();
+            navigate('/login');
+        }
+    };
 
     const drawerContent = (
         <div style={{ backgroundColor: currentTheme.backgroundColorHeader, color: currentTheme.color }}>
@@ -391,6 +404,19 @@ const CustomDrawer: React.FC<CustomDrawerProps> = ({ mobileOpen, handleDrawerTog
                     </List>
                 </Collapse>
             </List>
+            <List>
+                <ListItemButton
+                    onClick={handleLogout}
+                    style={location.pathname === '/logout' ? activeStyle : { color: currentTheme.iconColor }}
+                >
+                    <ListItemIcon style={{ minWidth: 'auto', ...(location.pathname === '/logout' ? activeStyle : { color: currentTheme.iconColor }) }}>
+                        <LogoutIcon />
+                    </ListItemIcon>
+                    {<ListItemText style={{ marginLeft: collapsed ? '20px' : '20px', transition: 'display 0.3s' }} primary="Decconnexion" />}
+                </ListItemButton>
+
+
+            </List>
         </div>
     );
 
@@ -415,7 +441,23 @@ const CustomDrawer: React.FC<CustomDrawerProps> = ({ mobileOpen, handleDrawerTog
                     },
                 }}
             >
-                {drawerContent}
+                {isAuthenticated ? (
+
+                    drawerContent
+
+                ) : (
+                    <List>
+                        <ListItemButton
+                            // onClick={() => disconnect()}
+                            style={location.pathname === '/login' ? activeStyle : { color: currentTheme.iconColor }}
+                        >
+                            <ListItemIcon style={{ minWidth: 'auto', ...(location.pathname === '/login' ? activeStyle : { color: currentTheme.iconColor }) }}>
+                                <LoginIcon />
+                            </ListItemIcon>
+                            {<ListItemText style={{ marginLeft: collapsed ? '20px' : '20px', transition: 'display 0.3s' }} primary="Login" />}
+                        </ListItemButton>
+                    </List>
+                )}
             </Drawer>
 
             {/* Drawer for desktop */}
@@ -434,7 +476,23 @@ const CustomDrawer: React.FC<CustomDrawerProps> = ({ mobileOpen, handleDrawerTog
                 }}
                 open
             >
-                {drawerContent}
+                {isAuthenticated ? (
+
+                    drawerContent
+
+                ) : (
+                    <List>
+                        <ListItemButton
+                            // onClick={() => disconnect()}
+                            style={location.pathname === '/login' ? activeStyle : { color: currentTheme.iconColor }}
+                        >
+                            <ListItemIcon style={{ minWidth: 'auto', ...(location.pathname === '/login' ? activeStyle : { color: currentTheme.iconColor }) }}>
+                                <LoginIcon />
+                            </ListItemIcon>
+                            {<ListItemText style={{ marginLeft: collapsed ? '20px' : '20px', transition: 'display 0.3s' }} primary="Login" />}
+                        </ListItemButton>
+                    </List>
+                )}
             </Drawer>
         </>
     );

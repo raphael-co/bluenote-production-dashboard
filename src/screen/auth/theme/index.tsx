@@ -5,10 +5,11 @@ export const lightTheme = {
         display: 'flex' as 'flex',
         flexDirection: 'column' as 'column',
         justifyContent: 'center' as 'center',
+        alignItems: 'center' as 'center',
         backgroundColor: 'transparent',
-        flex: 1,
-        maxWidth: 400,
+        // maxWidth: 400,
         width: '100%',
+        height: 'calc(100vh - 150px)',
     },
     title: {
         fontSize: '24px',
@@ -31,7 +32,7 @@ export const lightTheme = {
         marginBottom: '12px',
         backgroundColor: '#fff',
         color: '#333',
-        width: 'calc(100% - 20px)', 
+        width: 'calc(100% - 20px)',
         padding: ' 0px 10px'
     },
     placeholder: {
@@ -91,10 +92,10 @@ export const darkTheme = {
         display: 'flex' as 'flex',
         flexDirection: 'column' as 'column',
         justifyContent: 'center' as 'center',
-        backgroundColor: '#121212',
-        height: 'calc(100vh - 150px)',
+        backgroundColor: '#282828',
+        height: '100%',
         flex: 1,
-        maxWidth: 400,
+        // maxWidth: 400,
         width: '100%',
         alignItems: 'center'
     },
@@ -119,7 +120,7 @@ export const darkTheme = {
         marginBottom: '12px',
         backgroundColor: '#1e1e1e',
         color: '#fff',
-        width: 'calc(100% - 20px)', 
+        width: 'calc(100% - 20px)',
         padding: ' 0px 10px'
     },
     placeholder: {
@@ -141,7 +142,7 @@ export const darkTheme = {
         alignItems: 'center' as 'center',
         justifyContent: 'center' as 'center',
         marginBottom: '12px',
-        width: '100%',
+        width: 'calc(100% - 20px)',
         color: '#fff',
         fontSize: '16px',
         cursor: 'pointer' as 'pointer',
