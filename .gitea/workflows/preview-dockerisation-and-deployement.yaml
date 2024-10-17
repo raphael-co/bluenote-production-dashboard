@@ -1,0 +1,80 @@
+run-name: Deployment 🚀
+
+# Variables à modifier, le reste est fait automatiquement
+#hallo
+
+#---------------------------------------
+
+env:
+  REGISTRY: git.netgraph.fr
+  IMAGE_NAME: bluenote/production
+  REPO_OWNER: jonction
+  PORT_EXTERNE: 3002
+  PORT_INTERNE: 80
+
+#---------------------------------------
+
+  TODAY: $(date +'%Y-%m-%d')
+  IMAGE: ${{ env.REGISTRY }}/${{ env.REPO_OWNER }}/${{ env.IMAGE_NAME }}
+  IMAGE_TAG: ${{env.IMAGE}}:${{ env.TODAY }}
+  IMAGE_LATEST: ${{ env.IMAGE }}:latest
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build image
+    runs-on: ubuntu-latest
+    container: ghcr.io/catthehacker/ubuntu:act-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Login to Docker Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{env.REGISTRY}}
+          username: ${{ secrets.IDENTIFIANTROBOT }}
+          password: ${{ secrets.TOKENROBOT }}
+      - name: Building image
+        run: |
+          docker build -t ${{env.IMAGE_TAG}} -t ${{env.IMAGE_LATEST}} .
+      - name: pushing image
+        run: |
+          docker push ${{env.IMAGE_TAG}}
+          docker push ${{env.IMAGE_LATEST}}
+
+      - name: Install sshpass
+        run: |
+          apt-get update
+          apt-get install -y sshpass
+
+
+      - name: Deploy Latest Docker Image on remote server
+        run: |
+          sshpass -p "${{ secrets.PRODUCTION_VM_USER_PASSWORD }}" ssh -o StrictHostKeyChecking=no ${{ secrets.PRODUCTION_VM_USER }}@${{ secrets.PRODUCTION_VM_IP }} << 'EOF'
+
+            echo "Logging into Docker..."
+            docker login -u "${{ secrets.IDENTIFIANTROBOT }}" -p "${{ secrets.TOKENROBOT }}" ${{ env.REGISTRY }}
+
+            SANITIZED_IMAGE_NAME=$(echo "${{ env.IMAGE_NAME }}" | tr '[:upper:]' '[:lower:]' | tr -c 'a-z0-9-' '-' | sed 's/-*$//')
+            echo "image name ${{ env.IMAGE_NAME }} cleaned image name $SANITIZED_IMAGE_NAME"
+
+            if [ "$(docker ps -aq -f name=$SANITIZED_IMAGE_NAME)" ]; then
+              echo "Container with name $SANITIZED_IMAGE_NAME exists. Removing..."
+              docker rm -f $SANITIZED_IMAGE_NAME
+            fi
+
+            if [ "$(docker images -aq -f name=${{ env.IMAGE_NAME }})" ]; then
+              echo "images with name ${{ env.IMAGE_NAME }} exists. Removing..."
+              docker rmi -f ${{ env.IMAGE_NAME }}
+            fi
+
+            echo "Pulling the latest Docker image..."
+            docker pull ${{env.IMAGE_LATEST}}
+
+            echo "Running the Docker image..."
+            docker run -d --restart always --name $SANITIZED_IMAGE_NAME -p ${{ env.PORT_EXTERNE }}:${{ env.PORT_INTERNE }} ${{env.IMAGE_LATEST}} 
+          EOF
