@@ -7,7 +7,7 @@ run-name: Deployment 🚀
 
 env:
   REGISTRY: git.netgraph.fr
-  IMAGE_NAME: bluenote/production
+  IMAGE_NAME: map-point-dashboard/production
   REPO_OWNER: jonction
   PORT_EXTERNE: 3002
   PORT_INTERNE: 80
