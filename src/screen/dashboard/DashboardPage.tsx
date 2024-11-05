@@ -17,7 +17,7 @@ const DashboardPage: React.FC = () => {
         if (token) {
             const fetchUser = async () => {
                 try {
-                    const response = await axios.get(`${process.env.REACT_APP_API_URL}/user/`, {
+                    const response = await axios.get(`${process.env.REACT_APP_API_URL}/users/`, {
                         headers: {
                             'Authorization': `Bearer ${token}`
                         }
@@ -54,10 +54,6 @@ const DashboardPage: React.FC = () => {
                     <h2 style={currentTheme.title}>{user.username}</h2>
                     <p style={currentTheme.subtitle}>Email: {user.email}</p>
                     <p style={currentTheme.subtitle}>Membre depuis: {new Date(user.joined_at).toLocaleDateString()}</p>
-                    <p style={currentTheme.subtitle}>Dernière connexion: {new Date(user.last_login).toLocaleDateString()}</p>
-                    <p style={currentTheme.subtitle}>Followers: {user.followers}</p>
-                    <p style={currentTheme.subtitle}>Following: {user.followings}</p>
-                    <p style={currentTheme.subtitle}>Nombre de markers: {user.nbMarkerCount}</p>
                 </div>
             )}
         </div>

@@ -8,20 +8,15 @@ import { ThemeProvider, useTheme } from './context/ThemeContext';
 import LoginPage from './screen/auth/LoginPage';
 import { lightTheme, darkTheme } from './themeApp';
 import DashboardPage from './screen/dashboard/DashboardPage';
-import MapScreen from './screen/map';
 import Annoncement from './screen/annoncement/annoncement';
-import EditMarker from './componnent/EditMarker/EditMarker';
 import { SnackbarProvider } from 'notistack';
 import {
   Box, CssBaseline, Toolbar, AppBar, IconButton, Typography, Button,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import CustomDrawer from './componnent/Drawer';
-import UsersReports from './screen/reports/users';
 import Users from './screen/tabs/Users';
-import Markers from './screen/tabs/Markers';
 import AnnouncementsTable from './screen/tabs/Announcements';
-import MarkersReports from './screen/reports/markers';
 import Documentation from './screen/documentation';
 import HomeScreen from './screen/home';
 
@@ -90,7 +85,7 @@ const AppContent: React.FC = () => {
             component="div"
             onClick={() => navigate('/')}
           >
-            Map Point
+            bluenote production
           </Typography>
           <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end' }}>
             <Button color="inherit" onClick={handleThemeChange}>
@@ -133,16 +128,11 @@ const AppContent: React.FC = () => {
             <Route path="/" element={<HomeScreen />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
-            <Route path="/reports/users" element={<ProtectedRoute><UsersReports /></ProtectedRoute>} />
             <Route path="/tabs/users" element={<ProtectedRoute><Users /></ProtectedRoute>} />
-            <Route path="/tabs/markers" element={<ProtectedRoute><Markers /></ProtectedRoute>} />
             <Route path="/tabs/announcements" element={<ProtectedRoute><AnnouncementsTable /></ProtectedRoute>} />
-            <Route path="/reports/markers" element={<ProtectedRoute><MarkersReports /></ProtectedRoute>} />
-            <Route path="/map" element={<ProtectedRoute><MapScreen /></ProtectedRoute>} />
             <Route path="/announcements" element={<ProtectedRoute><Annoncement /></ProtectedRoute>} />
             <Route path="/documentation" element={<ProtectedRoute><Documentation /></ProtectedRoute>} />
             <Route path="/create-documentation" element={<ProtectedRoute><Documentation /></ProtectedRoute>} />
-            <Route path="/markers/edit/:id" element={<ProtectedRoute><EditMarker /></ProtectedRoute>} />
           </Routes>
         </div>
       </Box>

@@ -46,7 +46,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           'Accept-Language': 'en',
         },
         body: JSON.stringify({
-          emailAddresses: email,
+          email: email,
           password: password,
         }),
       });

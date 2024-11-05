@@ -15,8 +15,11 @@ const HomeScreen: React.FC = () => {
             <div style={currentTheme.container}>
                 <p style={currentTheme.title}>Bienvenue sur le Dashboard d'administration</p>
                 <p style={{ ...currentTheme.subtitle, textAlign: 'center' }}>
-                    Cette application vous permet de gérer facilement les markers, les utilisateurs, les commentaires, la documentation et les annonces.
-                    Connectez-vous pour accéder à toutes les fonctionnalités et gérer votre espace d'administration de manière efficace.
+                    🎬
+                    Dépôt dédié au développement et à la gestion du site web de Bluenote Production, une entreprise de production cinématographique et audiovisuelle.
+                    💡
+                    Ce dépôt contient le code source, les animations attractives en React JS/TS, et les outils de gestion de contenu pour offrir une expérience utilisateur immersive et fluide.
+                    🌟
                 </p>
                 <div style={currentTheme.buttonContainer}>
                     {!isAuthenticated ? (

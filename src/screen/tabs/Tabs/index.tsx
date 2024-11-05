@@ -11,6 +11,7 @@ import 'swiper/css/navigation';
 import 'swiper/css/thumbs';
 import './custom-swiper.css';
 import './myTable.css';
+import CustomTextField from '../../../componnent/CustomTextField';
 
 interface Column {
     id: string;
@@ -42,6 +43,7 @@ interface CommonTableProps<T> {
     handleMultiDelete: () => void;
     selectedIds?: number[];
     setSortColumn: (label: string) => void;
+    addButton?: React.ReactNode;
 }
 
 const CommonTable = <T extends { id: number;[key: string]: any }>({
@@ -65,6 +67,7 @@ const CommonTable = <T extends { id: number;[key: string]: any }>({
     sortColumn,
     sortOrder,
     setSortColumn,
+    addButton,
 }: CommonTableProps<T>) => {
     const [selectedIds, setSelectedIds] = useState<number[]>([]);
     const swiperRef = useRef<any>(null); // Ref pour accéder à l'instance de Swiper
@@ -129,8 +132,8 @@ const CommonTable = <T extends { id: number;[key: string]: any }>({
                                 navigation={true}
                                 modules={[FreeMode, Navigation, Thumbs]}
                                 style={{ borderRadius: '10px', padding: 0, width: '100px', height: '100px' }}
-                                onInit={(swiper : any) => {
-                                    swiperRef.current = swiper; 
+                                onInit={(swiper: any) => {
+                                    swiperRef.current = swiper;
                                     // swiper.navigation.nextEl.style.color = colorActive;
                                     // swiper.navigation.prevEl.style.color = colorActive;
                                 }}
@@ -205,27 +208,9 @@ const CommonTable = <T extends { id: number;[key: string]: any }>({
                                     ))}
                                 </Menu>
 
-                                <TextField
-                                    sx={{
-                                        '& .MuiOutlinedInput-root': {
-                                            '& fieldset': {
-                                                borderColor: colorActive,
-                                            },
-                                            '&:hover fieldset': {
-                                                borderColor: colorActive,
-                                            },
-                                            '&.Mui-focused fieldset': {
-                                                borderColor: colorActive,
-                                            },
-                                            color,
-                                        },
-                                        '& .MuiInputLabel-root': {
-                                            color,
-                                        },
-                                        '& .MuiInputLabel-root.Mui-focused': {
-                                            color: colorActive,
-                                        },
-                                    }}
+                                <CustomTextField
+                                    colorActive={colorActive}
+                                    color={color}
                                     label={label}
                                     variant="outlined"
                                     size="small"
@@ -233,11 +218,14 @@ const CommonTable = <T extends { id: number;[key: string]: any }>({
                                     onChange={(e) => setSearch(e.target.value)}
                                     style={{ marginLeft: '10px' }}
                                 />
+
                                 {selectedIds.length > 0 && (
                                     <IconButton color="error" aria-label="delete" onClick={handleMultiDelete} style={{ marginLeft: '10px' }}>
                                         <DeleteIcon />
                                     </IconButton>
                                 )}
+
+                                {addButton && addButton}
                             </div>
                         </TableCell>
                     </TableRow>
@@ -266,7 +254,7 @@ const CommonTable = <T extends { id: number;[key: string]: any }>({
                                     align={column.align || 'left'}
                                     style={{ color }}
                                     onClick={() => (sortColumn === column.id ? handleSort(column.id) : setSortColumn(column.id))}
-                                    sx={{ color, minWidth: column.minWidth ? `${column.minWidth}px` : '100px' }} 
+                                    sx={{ color, minWidth: column.minWidth ? `${column.minWidth}px` : '100px' }}
                                 >
                                     <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'row', gap: '5px' }}>
                                         <span>{column.label}</span>
