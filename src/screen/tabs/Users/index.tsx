@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { act, useEffect, useState } from 'react';
 import axios from 'axios';
 import { IconButton, MenuItem, Select, Snackbar, SnackbarContent, Tooltip } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
@@ -80,14 +80,17 @@ const UserTable: React.FC = () => {
     ];
 
     const fetchUsers = async () => {
+        console.log(sortColumn,
+            sortOrder,);
+
         try {
             const response = await axios.get(`${process.env.REACT_APP_API_URL}/users/all`, {
                 params: {
                     search,
                     page: page + 1,
                     size: rowsPerPage,
-                    sortColumn,
-                    sortOrder,
+                    sort_by: sortColumn,
+                    order:sortOrder,
                 },
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -165,42 +168,42 @@ const UserTable: React.FC = () => {
 
     // Fonction pour suppression multipleimport axios from 'axios';
 
-const handleMultiDelete = async () => {
-    if (selectedIds.length > 0) {
-        console.log(selectedIds);
+    const handleMultiDelete = async () => {
+        if (selectedIds.length > 0) {
+            console.log(selectedIds);
 
-        const confirmDelete = window.confirm(`Are you sure you want to delete the selected users?`);
-        if (!confirmDelete) return;
+            const confirmDelete = window.confirm(`Are you sure you want to delete the selected users?`);
+            if (!confirmDelete) return;
 
-        try {
-            // Envoi des IDs des utilisateurs à supprimer dans le corps de la requête
-            const response = await axios.delete(`${process.env.REACT_APP_API_URL}/users/multi`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-                data: { ids: selectedIds }, // Les IDs dans le corps de la requête
-            });
+            try {
+                // Envoi des IDs des utilisateurs à supprimer dans le corps de la requête
+                const response = await axios.delete(`${process.env.REACT_APP_API_URL}/users/multi`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                    data: { ids: selectedIds }, // Les IDs dans le corps de la requête
+                });
 
-            console.log('Deletion response:', response.data);
-            setMessageStatus('success');
-            setErrorMessage('Users deleted successfully' + selectedIds);
-            setOpenSnackbar(true);
-            fetchUsers()
+                console.log('Deletion response:', response.data);
+                setMessageStatus('success');
+                setErrorMessage('Users deleted successfully' + selectedIds);
+                setOpenSnackbar(true);
+                fetchUsers()
 
-        } catch (error) {
-            console.error('Error deleting users:', error);
-            setMessageStatus('error');
-            setErrorMessage(`Error deleting users`);
+            } catch (error) {
+                console.error('Error deleting users:', error);
+                setMessageStatus('error');
+                setErrorMessage(`Error deleting users`);
+                setOpenSnackbar(true);
+            }
+        } else {
+            console.log('No users selected for deletion');
+            setMessageStatus('warning');
+            setErrorMessage('No users selected for deletion');
             setOpenSnackbar(true);
         }
-    } else {
-        console.log('No users selected for deletion');
-        setMessageStatus('warning');
-        setErrorMessage('No users selected for deletion');
-        setOpenSnackbar(true);
-    }
-};
+    };
 
 
     const handleSort = (columnId: string) => {
@@ -223,14 +226,51 @@ const handleMultiDelete = async () => {
                     <DeleteIcon />
                 </IconButton>
                 <Select
-                value={user.role}
-                onChange={(e) => handleRoleUpdate(user.id, e.target.value as string)}
-                style={{ minWidth: 100 }}
-            >
-                <MenuItem value="user">User</MenuItem>
-                <MenuItem value="admin">Admin</MenuItem>
-                <MenuItem value="super_admin">Super Admin</MenuItem>
-            </Select>
+                    value={user.role}
+                    onChange={(e) => handleRoleUpdate(user.id, e.target.value as string)}
+                    sx={{
+                        color: color,
+                        minWidth: 135,
+                        '& .MuiOutlinedInput-notchedOutline': {
+                            borderColor: colorActive, // Change la couleur de la bordure
+                        },
+                        '&:hover .MuiOutlinedInput-notchedOutline': {
+                            borderColor: colorActive, // Change la couleur au survol
+                        },
+                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                            borderColor: colorActive, // Couleur de la bordure lorsqu'il est focus
+                        },
+                        '& .MuiSelect-icon': {
+                            color: colorActive, // Change la couleur de l'icône de la flèche
+                        },
+                    }}
+                    MenuProps={{
+                        PaperProps: {
+                            sx: {
+                                bgcolor: backgroundColor, // Change le fond de la liste déroulante
+                                color: color,
+                                '& .MuiMenuItem-root': {
+                                    '&.Mui-selected': {
+                                        bgcolor: colorActive, // Couleur de fond de l'élément actif
+                                        color: 'white', // Couleur du texte de l'élément actif
+                                    },
+                                    '&.Mui-selected:hover': {
+                                        color: 'white',
+                                        bgcolor: colorActive, // Couleur de fond de l'élément actif au survol
+                                    },
+                                    '&:hover': {
+                                        color: 'white',
+                                        bgcolor: theme === 'light' ? "#007bff70" : '#bb86fc69', // Couleur de fond au survol
+                                    },
+                                },
+                            },
+                        },
+                    }}
+                >
+                    <MenuItem value="user">User</MenuItem>
+                    <MenuItem value="admin">Admin</MenuItem>
+                    <MenuItem value="super_admin">Super Admin</MenuItem>
+                </Select>
             </div>
         );
     };
@@ -281,8 +321,8 @@ const handleMultiDelete = async () => {
                 title="Add User"
                 // content={undefined}
                 color={color}
-               backgroundColor={backgroundColor}
-               colorActive={colorActive}
+                backgroundColor={backgroundColor}
+                colorActive={colorActive}
             />
             <CommonTable
                 label="username or email"
