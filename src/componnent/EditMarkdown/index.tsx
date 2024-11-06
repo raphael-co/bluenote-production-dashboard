@@ -182,20 +182,8 @@ function EditMarkdown() {
     }
   }, [selectedFile]);
 
-
-
   return (
     <div className="section-editMarker-container" style={{ display: 'flex', flexDirection: 'column', gap: '10px', flex: 1, padding: '20px' }}>
-      <h1>Annoncement Editor</h1>
-      <input
-        type="text"
-        name="title"
-        id="title"
-        placeholder="Title"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        style={theme === 'dark' ? { backgroundColor: '#282828', color: '#fff' } : { backgroundColor: '#fff', color: '#000' }}
-      />
 
       {/* Editeur Markdown, seulement visible si aucun fichier n'est uploadé */}
       {!selectedFile && (

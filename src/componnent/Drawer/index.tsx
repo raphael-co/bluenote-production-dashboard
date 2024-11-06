@@ -44,10 +44,10 @@ const CustomDrawer: React.FC<CustomDrawerProps> = ({ mobileOpen, handleDrawerTog
     };
 
 
-    const getTitleFromUrl = () => {
-        const params = new URLSearchParams(location.search);
-        return params.get('title');
-    };
+    // const getTitleFromUrl = () => {
+    //     const params = new URLSearchParams(location.search);
+    //     return params.get('title');
+    // };
 
     const handleLogout = () => {
         const confirmLogout = window.confirm('Êtes-vous sûr de vouloir vous déconnecter ?');
@@ -92,13 +92,13 @@ const CustomDrawer: React.FC<CustomDrawerProps> = ({ mobileOpen, handleDrawerTog
                 </ListItemButton>
 
                 <ListItemButton
-                    onClick={() => navigate('/announcements')}
-                    style={location.pathname === '/announcements' ? activeStyle : { color: currentTheme.iconColor }}
+                    onClick={() => navigate('/about')}
+                    style={location.pathname === '/about' ? activeStyle : { color: currentTheme.iconColor }}
                 >
-                    <ListItemIcon style={{ minWidth: 'auto', ...(location.pathname === '/announcements' ? activeStyle : { color: currentTheme.iconColor }) }}>
+                    <ListItemIcon style={{ minWidth: 'auto', ...(location.pathname === '/about' ? activeStyle : { color: currentTheme.iconColor }) }}>
                         <EditNotificationsIcon />
                     </ListItemIcon>
-                    {<ListItemText style={{ marginLeft: collapsed ? '20px' : '20px', transition: 'display 0.3s' }} primary="Announcements" />}
+                    {<ListItemText style={{ marginLeft: collapsed ? '20px' : '20px', transition: 'display 0.3s' }} primary="About" />}
                 </ListItemButton>
 
                 <ListItemButton

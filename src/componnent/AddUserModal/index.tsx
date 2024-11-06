@@ -55,7 +55,7 @@ const AddUserModal: React.FC<CustomModalProps> = ({
                 },
             });
             setMessageStatus('success');
-            setErrorMessage('User created successfully');
+            setErrorMessage(response.data.message);
             setOpenSnackbar(true);
             onClose();
         } catch (error) {

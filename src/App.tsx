@@ -8,7 +8,6 @@ import { ThemeProvider, useTheme } from './context/ThemeContext';
 import LoginPage from './screen/auth/LoginPage';
 import { lightTheme, darkTheme } from './themeApp';
 import DashboardPage from './screen/dashboard/DashboardPage';
-import Annoncement from './screen/annoncement/annoncement';
 import { SnackbarProvider } from 'notistack';
 import {
   Box, CssBaseline, Toolbar, AppBar, IconButton, Typography, Button,
@@ -21,6 +20,7 @@ import Documentation from './screen/documentation';
 import HomeScreen from './screen/home';
 
 import { useNavigate } from 'react-router-dom';
+import About from './screen/about/about';
 
 const AppContent: React.FC = () => {
   const { theme, toggleTheme, mobileOpen, collapsed, handleDrawerToggle, handleCollapseToggle, drawerWidth, collapsedDrawerWidth } = useTheme();
@@ -130,7 +130,7 @@ const AppContent: React.FC = () => {
             <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
             <Route path="/tabs/users" element={<ProtectedRoute><Users /></ProtectedRoute>} />
             <Route path="/tabs/announcements" element={<ProtectedRoute><AnnouncementsTable /></ProtectedRoute>} />
-            <Route path="/announcements" element={<ProtectedRoute><Annoncement /></ProtectedRoute>} />
+            <Route path="/about" element={<ProtectedRoute><About /></ProtectedRoute>} />
             <Route path="/documentation" element={<ProtectedRoute><Documentation /></ProtectedRoute>} />
             <Route path="/create-documentation" element={<ProtectedRoute><Documentation /></ProtectedRoute>} />
           </Routes>

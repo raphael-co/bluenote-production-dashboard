@@ -1,4 +1,4 @@
-import React, { act, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { IconButton, MenuItem, Select, Snackbar, SnackbarContent, Tooltip } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
@@ -306,8 +306,7 @@ const UserTable: React.FC = () => {
                 )
             );
         } catch (error: any) {
-            console.error('Error updating role:', error);
-            setErrorMessage('Error updating role');
+            setErrorMessage(error.response?.data?.message ||'Error updating role');
             setMessageStatus('error');
             setOpenSnackbar(true);
         }
