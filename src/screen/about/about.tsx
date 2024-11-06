@@ -21,7 +21,11 @@ import { v4 as uuidv4 } from 'uuid';
 import './about.css';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
-import Article from './test';
+import { Severity } from '../../componnent/AddUserModal';
+import axios from 'axios';
+import Snackbar from '@mui/material/Snackbar/Snackbar';
+import { CustomSnackbar } from '../tabs/Users';
+import Editor from './editor';
 
 interface MarkdownItem {
     id: string;
@@ -61,7 +65,6 @@ const SortableItem: React.FC<SortableItemProps> = ({ id, content, index, editMar
 
     return (
         <div ref={setNodeRef} style={style} {...attributes}>
-            {/* Ajoutez une poignée de glissement ici */}
             <div style={{ display: 'flex', justifyContent: 'end' }} onClick={(e) => {
                 e.stopPropagation();
             }}>
@@ -120,6 +123,10 @@ const About: React.FC = () => {
     const [currentMarkdown, setCurrentMarkdown] = useState<string>('');
     const [editingIndex, setEditingIndex] = useState<number | null>(null);
     const [activeId, setActiveId] = useState<string | null>(null);
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+    const [messageStatus, setMessageStatus] = useState<Severity>('error');
+    const [videoFile, setVideoFile] = useState<File | null>(null);
 
     const handleChange = (markdown: string) => {
         setCurrentMarkdown(markdown);
@@ -173,13 +180,59 @@ const About: React.FC = () => {
         }
     };
 
+    const handleVideoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            setVideoFile(file);
+        }
+    };
+
+    const handleSubmit = async () => {
+        const formData = new FormData();
+        formData.append('title', title);
+        formData.append('blocks', JSON.stringify(markdownContent));
+
+        if (videoFile) {
+            formData.append('backgroundUrl', videoFile);
+        }
+
+        try {
+            const response = await axios.post(`${process.env.REACT_APP_API_URL}/about`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+            setMessageStatus('success');
+            setErrorMessage(response.data.message);
+            setOpenSnackbar(true);
+        } catch (error) {
+            setMessageStatus('error');
+            if (axios.isAxiosError(error) && error.response) {
+                if (error.response.data.message) {
+                    setErrorMessage(error.response.data.message);
+                } else {
+                    const apiErrors = error.response.data.errors || {};
+                    const errorMessages = Object.values(apiErrors).join(', ');
+                    setErrorMessage(errorMessages || 'An unexpected error occurred');
+                }
+            } else {
+                setErrorMessage('Network error or server unavailable');
+            }
+            setOpenSnackbar(true);
+        }
+    };
+
     return (
         <div className="EditMarkdown-container">
             <div
                 className="section-editMarker-container"
                 style={{ maxHeight: '600px', width: '100%', padding: '20px' }}
             >
-                <h1>About Editor</h1>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <h1>About Editor</h1>
+                    <button onClick={handleSubmit}>Submit</button>
+                </div>
                 <input
                     type="text"
                     name="title"
@@ -194,11 +247,18 @@ const About: React.FC = () => {
                     }
                 />
 
-                <Article currentMarkdown={currentMarkdown} handleChange={handleChange} />
+                <Editor currentMarkdown={currentMarkdown} handleChange={handleChange} />
 
                 <button onClick={addOrUpdateMarkdownBlock} style={{ marginBottom: '20px' }}>
                     {editingIndex !== null ? 'Update' : 'Add'}
                 </button>
+
+                <input
+                    type="file"
+                    accept="video/*"
+                    onChange={handleVideoChange}
+                    style={{ marginBottom: '20px' }}
+                />
 
                 <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
                     <SortableContext
@@ -228,6 +288,16 @@ const About: React.FC = () => {
                     </DragOverlay>
                 </DndContext>
             </div>
+            <Snackbar
+                open={openSnackbar}
+                autoHideDuration={6000}
+                onClose={() => setOpenSnackbar(false)}
+            >
+                <CustomSnackbar
+                    message={errorMessage}
+                    severity={messageStatus}
+                />
+            </Snackbar>
         </div>
     );
 };

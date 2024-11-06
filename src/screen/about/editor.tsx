@@ -27,12 +27,12 @@ import SubscriptIcon from '@mui/icons-material/Subscript';
 import InsertPhotoIcon from '@mui/icons-material/InsertPhoto';
 import OpacityIcon from '@mui/icons-material/Opacity';
 
-interface ArticleProps {
+interface EditorProps {
     handleChange: (markdown: string) => void;
     currentMarkdown: string;
 }
 
-const Article: React.FC<ArticleProps> = ({ handleChange, currentMarkdown }) => {
+const Editor: React.FC<EditorProps> = ({ handleChange, currentMarkdown }) => {
     const [textColor, setTextColor] = useState<string>('#000000');
     const [backgroundColor, setBackgroundColor] = useState<string>('#ffffff');
     const [zoom, setZoom] = useState<number>(1);
@@ -424,4 +424,4 @@ const Article: React.FC<ArticleProps> = ({ handleChange, currentMarkdown }) => {
     );
 };
 
-export default Article;
+export default Editor;

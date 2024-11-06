@@ -14,7 +14,7 @@ interface CustomModalProps {
     colorActive?: string;
 }
 
-type Severity = 'success' | 'error' | 'warning' | 'info';
+export type Severity = 'success' | 'error' | 'warning' | 'info';
 
 const AddUserModal: React.FC<CustomModalProps> = ({
     open,
