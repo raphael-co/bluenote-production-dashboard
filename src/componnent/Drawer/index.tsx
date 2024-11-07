@@ -102,6 +102,16 @@ const CustomDrawer: React.FC<CustomDrawerProps> = ({ mobileOpen, handleDrawerTog
                 </ListItemButton>
 
                 <ListItemButton
+                    onClick={() => navigate('/work')}
+                    style={location.pathname === '/work' ? activeStyle : { color: currentTheme.iconColor }}
+                >
+                    <ListItemIcon style={{ minWidth: 'auto', ...(location.pathname === '/work' ? activeStyle : { color: currentTheme.iconColor }) }}>
+                        <EditNotificationsIcon />
+                    </ListItemIcon>
+                    {<ListItemText style={{ marginLeft: collapsed ? '20px' : '20px', transition: 'display 0.3s' }} primary="Work" />}
+                </ListItemButton>
+                
+                <ListItemButton
                     onClick={() => navigate('/create-documentation')}
                     style={location.pathname === '/create-documentation' ? activeStyle : { color: currentTheme.iconColor }}
                 >

@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+// About.tsx
+
+import React, { useEffect, useState } from 'react';
 import {
     DndContext,
     useSensor,
@@ -7,145 +9,97 @@ import {
     KeyboardSensor,
     closestCenter,
     DragEndEvent,
-    DragOverlay
+    DragOverlay,
 } from '@dnd-kit/core';
 import {
     SortableContext,
     sortableKeyboardCoordinates,
     verticalListSortingStrategy,
     arrayMove,
-    useSortable,
 } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
-import { v4 as uuidv4 } from 'uuid';
 import './about.css';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
-import { Severity } from '../../componnent/AddUserModal';
-import axios from 'axios';
-import Snackbar from '@mui/material/Snackbar/Snackbar';
+
+import Snackbar from '@mui/material/Snackbar';
 import { CustomSnackbar } from '../tabs/Users';
 import Editor from './editor';
+import axios from 'axios';
+import { MarkdownItem } from '../../interfaces/types';
+import {
+    addNewBlock,
+    deleteBlockService,
+    getAboutData,
+    submitAboutData,
+    updateAboutData,
+    updateBlockContent,
+    updateBlockOrder,
+} from './services/aboutService';
 
-interface MarkdownItem {
-    id: string;
-    content: string;
-}
-
-interface SortableItemProps {
-    id: string;
-    content: string;
-    index: number;
-    editMarkdownBlock: (index: number) => void;
-}
-
-const SortableItem: React.FC<SortableItemProps> = ({ id, content, index, editMarkdownBlock }) => {
-    const { theme } = useTheme();
-
-    const colorActive = theme === 'light' ? '#007BFF' : '#bb86fc';
-
-    const {
-        attributes,
-        listeners,
-        setNodeRef,
-        transform,
-        transition,
-        isDragging,
-    } = useSortable({ id });
-
-    const style: React.CSSProperties = {
-        transform: CSS.Transform.toString(transform),
-        transition,
-        padding: '10px',
-        margin: '5px 0',
-        border: '1px solid #ccc',
-        position: 'relative',
-        backgroundColor: isDragging ? '#e0e0e0' : 'transparent',
-    };
-
-    return (
-        <div ref={setNodeRef} style={style} {...attributes}>
-            <div style={{ display: 'flex', justifyContent: 'end' }} onClick={(e) => {
-                e.stopPropagation();
-            }}>
-                <button
-                    style={{
-                        border: 'none',
-                        color: colorActive,
-                        width: '30px',
-                        height: '30px',
-                        cursor: 'grab',
-                        padding: '5px',
-                        backgroundColor: 'transparent',
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        marginBottom: '10px',
-                    }}
-                    type="button"
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        editMarkdownBlock(index);
-                    }}
-                >
-                    ✎
-                </button>
-                <div
-                    {...listeners}
-                    style={{
-                        width: '30px',
-                        height: '30px',
-                        cursor: 'grab',
-                        padding: '5px',
-                        backgroundColor: 'transparent',
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        marginBottom: '10px',
-                    }}
-                >
-                    &#x2630;
-                </div>
-
-            </div>
-
-            <div dangerouslySetInnerHTML={{ __html: content }} />
-
-        </div>
-    );
-};
+import SortableItem from './components/SortableItem';
+import { Severity } from '../../componnent/AddUserModal';
 
 const About: React.FC = () => {
     const { token } = useAuth();
     const [title, setTitle] = useState<string>('');
-    const { theme } = useTheme();
     const [markdownContent, setMarkdownContent] = useState<MarkdownItem[]>([]);
     const [currentMarkdown, setCurrentMarkdown] = useState<string>('');
     const [editingIndex, setEditingIndex] = useState<number | null>(null);
-    const [activeId, setActiveId] = useState<string | null>(null);
+    const [activeId, setActiveId] = useState<number | null>(null);
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [messageStatus, setMessageStatus] = useState<Severity>('error');
-    const [videoFile, setVideoFile] = useState<File | null>(null);
+    const [videoFile, setVideoFile] = useState<File | string | null>(null);
+    const [dataFetched, setDataFetched] = useState(false); // Initialize to false
+
+    const { theme } = useTheme();
 
     const handleChange = (markdown: string) => {
         setCurrentMarkdown(markdown);
     };
 
-    const addOrUpdateMarkdownBlock = () => {
+    const addOrUpdateMarkdownBlock = async () => {
         if (currentMarkdown.trim()) {
-            if (editingIndex !== null) {
-                setMarkdownContent((prevContent) =>
-                    prevContent.map((item, index) =>
-                        index === editingIndex ? { ...item, content: currentMarkdown } : item
-                    )
-                );
-                setEditingIndex(null);
-            } else {
-                setMarkdownContent((prevContent) => [
-                    ...prevContent,
-                    { id: uuidv4(), content: currentMarkdown },
-                ]);
+            try {
+                if (editingIndex !== null) {
+                    // Update block
+                    const blockId = markdownContent[editingIndex].id;
+
+                    const response = await updateBlockContent(blockId, currentMarkdown, token);
+
+                    setMessageStatus('success');
+                    setErrorMessage(response.message);
+                    setOpenSnackbar(true);
+
+                    setMarkdownContent((prevContent) =>
+                        prevContent.map((item, index) =>
+                            index === editingIndex ? { ...item, content: currentMarkdown } : item
+                        )
+                    );
+
+                    setEditingIndex(null);
+                } else {
+                    // Add new block
+                    const response = await addNewBlock(currentMarkdown, token);
+
+                    setMessageStatus('success');
+                    setErrorMessage(response.message);
+                    setOpenSnackbar(true);
+
+                    setMarkdownContent((prevContent) => [
+                        ...prevContent,
+                        { id: response.blockId, content: currentMarkdown },
+                    ]);
+                }
+            } catch (error) {
+                setMessageStatus('error');
+                if (axios.isAxiosError(error) && error.response) {
+                    setErrorMessage(error.response.data.message || 'An error occurred');
+                } else {
+                    setErrorMessage('Network error or server unavailable');
+                }
+                setOpenSnackbar(true);
+                return;
             }
             setCurrentMarkdown('');
         }
@@ -163,8 +117,8 @@ const About: React.FC = () => {
         })
     );
 
-    const handleDragStart = (event: { active: { id: string | number } }) => {
-        setActiveId(event.active.id as string); // Conversion explicite en string
+    const handleDragStart = (event: { active: { id: number | string } }) => {
+        setActiveId(Number(event.active.id));
     };
 
     const handleDragEnd = (event: DragEndEvent) => {
@@ -175,8 +129,27 @@ const About: React.FC = () => {
             setMarkdownContent((items) => {
                 const oldIndex = items.findIndex((item) => item.id === active.id);
                 const newIndex = items.findIndex((item) => item.id === over.id);
-                return arrayMove(items, oldIndex, newIndex);
+                const newItems = arrayMove(items, oldIndex, newIndex);
+
+                // After updating local state, send the updated order to the backend
+                updateBlockOrderInBackend(newItems);
+
+                return newItems;
             });
+        }
+    };
+
+    const updateBlockOrderInBackend = async (items: MarkdownItem[]) => {
+        try {
+            await updateBlockOrder(items, token);
+        } catch (error) {
+            setMessageStatus('error');
+            if (axios.isAxiosError(error) && error.response) {
+                setErrorMessage(error.response.data.message || 'An error occurred');
+            } else {
+                setErrorMessage('Network error or server unavailable');
+            }
+            setOpenSnackbar(true);
         }
     };
 
@@ -187,35 +160,79 @@ const About: React.FC = () => {
         }
     };
 
+    useEffect(() => {
+        const fetchProjects = async () => {
+            try {
+                const result = await getAboutData();
+
+                if (result.status !== 'success') {
+                    throw new Error('Failed to fetch projects');
+                }
+
+                setTitle(result.data.title);
+                setVideoFile(result.data.backgroundUrl);
+                setMarkdownContent(
+                    result.data.about_blocks
+                        .sort((a: any, b: any) => a.order_index - b.order_index)
+                        .map((block: any) => ({
+                            id: block.id,
+                            content: block.description,
+                        }))
+                );
+                setDataFetched(true); // Data exists
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                setDataFetched(false); // Data does not exist
+            }
+        };
+
+        fetchProjects();
+    }, []);
+
     const handleSubmit = async () => {
-        const formData = new FormData();
-        formData.append('title', title);
-        formData.append('blocks', JSON.stringify(markdownContent));
-
-        if (videoFile) {
-            formData.append('backgroundUrl', videoFile);
-        }
-
         try {
-            const response = await axios.post(`${process.env.REACT_APP_API_URL}/about`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                    'Authorization': `Bearer ${token}`,
-                },
-            });
+            let response;
+            if (dataFetched) {
+                // Data exists, use PATCH to update
+                response = await updateAboutData(title, videoFile, token);
+            } else {
+                // Data does not exist, use POST to create
+                response = await submitAboutData(title, videoFile, token);
+                setDataFetched(true); // Set dataFetched to true after creating data
+            }
             setMessageStatus('success');
-            setErrorMessage(response.data.message);
+            setErrorMessage(response.message);
             setOpenSnackbar(true);
         } catch (error) {
             setMessageStatus('error');
             if (axios.isAxiosError(error) && error.response) {
-                if (error.response.data.message) {
-                    setErrorMessage(error.response.data.message);
-                } else {
-                    const apiErrors = error.response.data.errors || {};
-                    const errorMessages = Object.values(apiErrors).join(', ');
-                    setErrorMessage(errorMessages || 'An unexpected error occurred');
-                }
+                setErrorMessage(error.response.data.message || 'An error occurred');
+            } else {
+                setErrorMessage('Network error or server unavailable');
+            }
+            setOpenSnackbar(true);
+        }
+    };
+
+    const deleteBlock = async (id: number) => {
+        const confirmDelete = window.confirm('Are you sure you want to delete this block?');
+
+        if (!confirmDelete) {
+            return;
+        }
+
+        try {
+            const response = await deleteBlockService(id, token);
+
+            setMessageStatus('success');
+            setErrorMessage(response.message || 'Block deleted successfully');
+            setOpenSnackbar(true);
+
+            setMarkdownContent((prevContent) => prevContent.filter((block) => block.id !== id));
+        } catch (error) {
+            setMessageStatus('error');
+            if (axios.isAxiosError(error) && error.response) {
+                setErrorMessage(error.response.data.message || 'An error occurred');
             } else {
                 setErrorMessage('Network error or server unavailable');
             }
@@ -229,14 +246,54 @@ const About: React.FC = () => {
                 className="section-editMarker-container"
                 style={{ maxHeight: '600px', width: '100%', padding: '20px' }}
             >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div
+                    style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                    }}
+                >
                     <h1>About Editor</h1>
-                    <button onClick={handleSubmit}>Submit</button>
+                    {videoFile ? (
+                        <div style={{ position: 'relative' }}>
+                            <button
+                                color="red"
+                                style={{
+                                    zIndex: '1',
+                                    position: 'absolute',
+                                    top: '0',
+                                    right: '0',
+                                    cursor: 'pointer',
+                                }}
+                                onClick={() => setVideoFile(null)}
+                            >
+                                X
+                            </button>
+
+                            <video
+                                src={
+                                    typeof videoFile === 'string' ? videoFile : URL.createObjectURL(videoFile)
+                                }
+                                style={{
+                                    width: '300px',
+                                    height: 'auto',
+                                    marginBottom: '20px',
+                                }}
+                                controls
+                            />
+                        </div>
+                    ) : (
+                        <input
+                            type="file"
+                            accept="video/*"
+                            onChange={handleVideoChange}
+                            style={{ marginBottom: '20px' }}
+                        />
+                    )}
                 </div>
                 <input
                     type="text"
                     name="title"
-                    id="title"
                     placeholder="Title"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
@@ -246,57 +303,71 @@ const About: React.FC = () => {
                             : { backgroundColor: '#fff', color: '#000' }
                     }
                 />
+                <button onClick={handleSubmit}>{dataFetched ? 'Update' : 'Submit'}</button>
 
-                <Editor currentMarkdown={currentMarkdown} handleChange={handleChange} />
+                {dataFetched && (
+                    <>
+                        <hr style={{ width: '100%' }} />
+                        <Editor currentMarkdown={currentMarkdown} handleChange={handleChange} />
 
-                <button onClick={addOrUpdateMarkdownBlock} style={{ marginBottom: '20px' }}>
-                    {editingIndex !== null ? 'Update' : 'Add'}
-                </button>
+                        <button onClick={addOrUpdateMarkdownBlock} style={{ marginBottom: '20px' }}>
+                            {editingIndex !== null ? 'Update' : 'Add'}
+                        </button>
 
-                <input
-                    type="file"
-                    accept="video/*"
-                    onChange={handleVideoChange}
-                    style={{ marginBottom: '20px' }}
-                />
+                        <DndContext
+                            sensors={sensors}
+                            collisionDetection={closestCenter}
+                            onDragStart={handleDragStart}
+                            onDragEnd={handleDragEnd}
+                        >
+                            <SortableContext
+                                items={markdownContent.map((item) => item.id)}
+                                strategy={verticalListSortingStrategy}
+                            >
+                                <div
+                                    style={{
+                                        padding: '10px',
+                                        background: 'transparent',
+                                        border: '1px solid #ccc',
+                                    }}
+                                >
+                                    <h4>Organisation des blocks:</h4>
+                                    {markdownContent.map((item, index) => (
+                                        <SortableItem
+                                            key={item.id}
+                                            id={item.id}
+                                            content={item.content}
+                                            index={index}
+                                            editMarkdownBlock={editMarkdownBlock}
+                                            deleteBlock={deleteBlock}
+                                        />
+                                    ))}
+                                </div>
+                            </SortableContext>
 
-                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-                    <SortableContext
-                        items={markdownContent.map((item) => item.id)}
-                        strategy={verticalListSortingStrategy}
-                    >
-                        <div style={{ padding: '10px', background: 'transparent', border: '1px solid #ccc' }}>
-                            <h4>Organisation des blocks:</h4>
-                            {markdownContent.map((item, index) => (
-                                <SortableItem
-                                    key={item.id}
-                                    id={item.id}
-                                    content={item.content}
-                                    index={index}
-                                    editMarkdownBlock={editMarkdownBlock}
-                                />
-                            ))}
-                        </div>
-                    </SortableContext>
-
-                    <DragOverlay>
-                        {activeId ? (
-                            <div style={{ padding: '10px', border: '1px solid #ccc', backgroundColor: '#f0f0f0' }}>
-                                {markdownContent.find((item) => item.id === activeId)?.content}
-                            </div>
-                        ) : null}
-                    </DragOverlay>
-                </DndContext>
+                            <DragOverlay>
+                                {activeId ? (
+                                    <div
+                                        style={{
+                                            padding: '10px',
+                                            border: '1px solid #ccc',
+                                            backgroundColor: '#f0f0f0',
+                                        }}
+                                    >
+                                        {markdownContent.find((item) => item.id === activeId)?.content}
+                                    </div>
+                                ) : null}
+                            </DragOverlay>
+                        </DndContext>
+                    </>
+                )}
             </div>
             <Snackbar
                 open={openSnackbar}
                 autoHideDuration={6000}
                 onClose={() => setOpenSnackbar(false)}
             >
-                <CustomSnackbar
-                    message={errorMessage}
-                    severity={messageStatus}
-                />
+                <CustomSnackbar message={errorMessage} severity={messageStatus} />
             </Snackbar>
         </div>
     );

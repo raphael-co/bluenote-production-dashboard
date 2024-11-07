@@ -21,6 +21,7 @@ import HomeScreen from './screen/home';
 
 import { useNavigate } from 'react-router-dom';
 import About from './screen/about/about';
+import Work from './screen/work';
 
 const AppContent: React.FC = () => {
   const { theme, toggleTheme, mobileOpen, collapsed, handleDrawerToggle, handleCollapseToggle, drawerWidth, collapsedDrawerWidth } = useTheme();
@@ -131,6 +132,7 @@ const AppContent: React.FC = () => {
             <Route path="/tabs/users" element={<ProtectedRoute><Users /></ProtectedRoute>} />
             <Route path="/tabs/announcements" element={<ProtectedRoute><AnnouncementsTable /></ProtectedRoute>} />
             <Route path="/about" element={<ProtectedRoute><About /></ProtectedRoute>} />
+            <Route path="/work" element={<ProtectedRoute><Work /></ProtectedRoute>} />
             <Route path="/documentation" element={<ProtectedRoute><Documentation /></ProtectedRoute>} />
             <Route path="/create-documentation" element={<ProtectedRoute><Documentation /></ProtectedRoute>} />
           </Routes>
