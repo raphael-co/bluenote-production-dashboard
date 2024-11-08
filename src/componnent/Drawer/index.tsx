@@ -11,11 +11,12 @@ import CustomMenuIconClose from '../svg/CustomMenuIconClose';
 import CustomMenuIconOpen from '../svg/CustomMenuIconopen';
 import EditNoteIcon from '@mui/icons-material/EditNote';
 import ListAltIcon from '@mui/icons-material/ListAlt';
-
+import MovieIcon from '@mui/icons-material/Movie';
+import InfoIcon from '@mui/icons-material/Info';
+import DashboardCustomizeIcon from '@mui/icons-material/DashboardCustomize';
 import RecentActorsIcon from '@mui/icons-material/RecentActors';
 
 import DashboardIcon from '@mui/icons-material/Dashboard';
-import EditNotificationsIcon from '@mui/icons-material/EditNotifications';
 import { useAuth } from '../../context/AuthContext';
 
 import LoginIcon from '@mui/icons-material/Login';
@@ -96,7 +97,7 @@ const CustomDrawer: React.FC<CustomDrawerProps> = ({ mobileOpen, handleDrawerTog
                     style={location.pathname === '/about' ? activeStyle : { color: currentTheme.iconColor }}
                 >
                     <ListItemIcon style={{ minWidth: 'auto', ...(location.pathname === '/about' ? activeStyle : { color: currentTheme.iconColor }) }}>
-                        <EditNotificationsIcon />
+                        <InfoIcon />
                     </ListItemIcon>
                     {<ListItemText style={{ marginLeft: collapsed ? '20px' : '20px', transition: 'display 0.3s' }} primary="About" />}
                 </ListItemButton>
@@ -106,9 +107,19 @@ const CustomDrawer: React.FC<CustomDrawerProps> = ({ mobileOpen, handleDrawerTog
                     style={location.pathname === '/work' ? activeStyle : { color: currentTheme.iconColor }}
                 >
                     <ListItemIcon style={{ minWidth: 'auto', ...(location.pathname === '/work' ? activeStyle : { color: currentTheme.iconColor }) }}>
-                        <EditNotificationsIcon />
+                        <MovieIcon />
                     </ListItemIcon>
                     {<ListItemText style={{ marginLeft: collapsed ? '20px' : '20px', transition: 'display 0.3s' }} primary="Work" />}
+                </ListItemButton>
+
+                <ListItemButton
+                    onClick={() => navigate('/expertise')}
+                    style={location.pathname === '/expertise' ? activeStyle : { color: currentTheme.iconColor }}
+                >
+                    <ListItemIcon style={{ minWidth: 'auto', ...(location.pathname === '/expertise' ? activeStyle : { color: currentTheme.iconColor }) }}>
+                        <DashboardCustomizeIcon />
+                    </ListItemIcon>
+                    {<ListItemText style={{ marginLeft: collapsed ? '20px' : '20px', transition: 'display 0.3s' }} primary="Expertise" />}
                 </ListItemButton>
                 
                 <ListItemButton
