@@ -10,3 +10,21 @@ export interface SortableItemProps {
     editMarkdownBlock: (index: number) => void;
     deleteBlock: (id: number, token: string | null) => void;
 }
+
+export interface SortableExpertiseProps {
+    id: number;
+    title: string;
+    description: string;
+    block : SortableExpertiseBlockProps
+    index: number;
+    editBlock: (index: number) => void;
+    deleteBlock: (id: number, token: string | null) => void;
+}
+
+export interface SortableExpertiseBlockProps {
+    id?: number;
+    title: string;
+    description: string;
+    img: string;
+    index: number;
+}

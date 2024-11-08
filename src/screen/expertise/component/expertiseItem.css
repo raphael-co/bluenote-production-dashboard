@@ -1,0 +1,91 @@
+.expertise-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    overflow: hidden;
+    width: 100%;
+    gap: 10px;
+    max-width: 1024px;
+    /* padding: 10px; */
+    max-height: 620px;
+}
+
+@media (min-width: 768px) {
+    .expertise-item {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+    .expertise-item:nth-child(even) {
+        flex-direction: row-reverse;
+        justify-content: space-between;
+        /* Assure que l'espace est bien réparti */
+    }
+
+    .expertise-image,
+    .expertise-content {
+        flex: 1 1 50%;
+        /* Les deux prennent exactement 50% de la largeur */
+        max-width: 50%;
+        /* Ajoute un peu de padding pour aérer les éléments */
+        box-sizing: border-box;
+        /* Inclut le padding dans le calcul de la largeur */
+    }
+}
+
+.expertise-container p {
+    font-size: large;
+}
+
+.expertise-image {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    /* Garde un ratio 1:1 */
+    background-size: cover;
+    /* Assure que l'image couvre tout le conteneur */
+    background-position: center;
+    /* Centre l'image */
+    overflow: hidden;
+    /* Cache toute partie de l'image qui dépasse */
+}
+
+@media (min-width: 768px) {
+    .expertise-image {
+        height: auto;
+    }
+}
+
+.expertise-content {
+    flex: 1;
+}
+
+.expertise-content h3 {
+    color: #e74c3c;
+    /* Couleur rouge pour le titre */
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+.expertise-content p {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #ddd;
+}
+
+
+.expertise h3 {
+    color: #e74c3c;
+    /* Couleur rouge pour le titre */
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    width: 100%;
+    text-align: start;
+}
+
+.expertise p {
+    font-size: large;
+    line-height: 1.6;
+    color: #ddd;
+}

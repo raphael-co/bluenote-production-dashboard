@@ -224,7 +224,7 @@ const Editor: React.FC<EditorProps> = ({ handleChange, currentMarkdown }) => {
 
     return (
         <div className={styles.articleContainer}>
-            <div className={styles.toolbar} style={{ gap: '2px', display: 'flex', flexWrap: 'wrap' }}>
+            <div className={styles.toolbar} style={{ gap: '2px', display: 'flex', flexWrap: 'wrap', marginBottom: '10px' }}>
                 <Tooltip title="Zoom avant">
                     <button onClick={() => handleZoom(true)}>
                         <ZoomInIcon />
