@@ -53,3 +53,19 @@ export const updateExpertiseData = async (
   return response.data;
 };
 
+
+export const addExpertiseBlock = async (title: string, description: string, img: File, token: string) => {
+  const formData = new FormData();
+  formData.append('title', title);
+  formData.append('description', description);
+  formData.append('img', img);
+
+  const response = await axios.post(`${API_URL}/expertise/block`, formData, {
+      headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+      },
+  });
+
+  return response.data;
+};
