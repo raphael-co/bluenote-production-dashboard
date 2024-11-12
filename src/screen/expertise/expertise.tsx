@@ -7,7 +7,7 @@ import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import Snackbar from '@mui/material/Snackbar';
 import { CustomSnackbar } from '../tabs/Users';
 import { Severity } from '../../componnent/AddUserModal';
-import { addExpertiseBlock, getExpertiseData, submitExpertiseData, updateExpertiseData } from './services/expertiseService';
+import { addExpertiseBlock, getExpertiseData, submitExpertiseData, updateExpertiseBlock, updateExpertiseData } from './services/expertiseService';
 import { useAuth } from '../../context/AuthContext';
 import axios from 'axios';
 import {
@@ -44,27 +44,7 @@ const Expertise: React.FC = () => {
     });
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const [blocks, setBlocks] = useState<{ image_url: string; block_title: string; block_description: string }[]>([
-        // {
-        //     img: 'https://cdn.b12.io/client_media/S4rnTgpV/a46e7846-7a86-11ef-ae7d-0242ac110002-06-regular_image.png',
-        //     title: 'Commercials',
-        //     description: 'We create your advertisements, by adopting the best visual and narrative strategy to boost your communication campaigns.',
-        // },
-        // {
-        //     img: 'https://cdn.b12.io/client_media/S4rnTgpV/bc552b00-6bbb-11ef-bd08-0242ac110002-21-regular_image.png',
-        //     title: 'Music videos',
-        //     description: 'We produce innovative, creative music videos with a unique and thoughtful artistic vision that you won’t find anywhere else.',
-        // },
-        // {
-        //     img: 'https://cdn.b12.io/client_media/S4rnTgpV/0c69ad8c-5aff-11ef-82ff-0242ac110002-46-regular_image.png',
-        //     title: 'Fiction and Documentary',
-        //     description: 'We create films with original scripts and bold direction, and produce impactful documentaries that blend art, reality, and strong storytelling.',
-        // },
-        // {
-        //     img: 'https://cdn.b12.io/client_media/S4rnTgpV/b3008d8a-7a82-11ef-ac3b-0242ac110002-38-regular_image.png',
-        //     title: '3D & 2D animation',
-        //     description: 'We collaborate with talented animators from the most prestigious school for your 3D and 2D projects.',
-        // },
+    const [blocks, setBlocks] = useState<{ id: string; image_url: string; block_title: string; block_description: string }[]>([
     ]
     );
 
@@ -75,10 +55,13 @@ const Expertise: React.FC = () => {
 
     const handleDragEnd = (event: DragEndEvent) => {
         const { active, over } = event;
+
+        console.log(active, over);
+        
         if (over && active.id !== over.id) {
             setBlocks((items) => {
-                const oldIndex = items.findIndex((item) => item.block_title === active.id);
-                const newIndex = items.findIndex((item) => item.block_title === over.id);
+                const oldIndex = items.findIndex((item) => item.id === active.id);
+                const newIndex = items.findIndex((item) => item.id === over.id);
                 return arrayMove(items, oldIndex, newIndex);
             });
         }
@@ -160,12 +143,13 @@ const Expertise: React.FC = () => {
         if (data.img && token) {
             try {
                 // Appel de la route pour ajouter un bloc d'expertise
-                const response = await addExpertiseBlock(data.title, data.description, data.img, token);
+                const response = await addExpertiseBlock(data.title, data.description, data.img, token, blocks.length.toString());
 
                 if (response.status === 'success') {
                     setBlocks((prevBlocks) => [
                         ...prevBlocks,
                         {
+                            id: response.data.id,
                             image_url: response.data.image_url, // Utilisez l'URL renvoyée par le backend
                             block_title: data.title,
                             block_description: data.description,
@@ -201,6 +185,51 @@ const Expertise: React.FC = () => {
     };
 
 
+    const handleSave = async (id: string, data: { title: string; description: string; img: File | null }) => {
+        try {
+            if (token === null) {
+                return false;
+            }
+
+            const response = await updateExpertiseBlock(id, data.title, data.description, data.img, token);
+
+            if (response.status === 'success') {
+                setBlocks((prevBlocks) =>
+                    prevBlocks.map((block) =>
+                        block.id === id
+                            ? {
+                                ...block,
+                                image_url: response.data.image_url, // URL de l'image mise à jour
+                                block_title: data.title,
+                                block_description: data.description,
+                            }
+                            : block
+                    )
+                );
+
+                setMessageStatus('success');
+                setErrorMessage(response.message || 'Block update successfully');
+                setOpenSnackbar(true);
+
+                return true
+            } else {
+                setMessageStatus('error');
+                setErrorMessage(response.message || 'An error occurred');
+                setOpenSnackbar(true);
+                return false
+            }
+        } catch (error) {
+            setMessageStatus('error');
+            if (axios.isAxiosError(error) && error.response) {
+                setErrorMessage(error.response.data.message || 'An error occurred');
+            } else {
+                setErrorMessage('Network error or server unavailable');
+            }
+            setOpenSnackbar(true);
+            return false
+        }
+
+    };
 
     return (
         <div className="expertise-container">
@@ -262,14 +291,17 @@ const Expertise: React.FC = () => {
                     </div>
                     <div className="expertise">
                         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                            <SortableContext items={blocks.map((item) => item.block_title)} strategy={verticalListSortingStrategy}>
+                            <SortableContext items={blocks.map((item) => item.id)} strategy={verticalListSortingStrategy}>
                                 {blocks.length > 0 && blocks.map((block, index) => (
                                     <SortableExpertiseItem
+                                        handleSave={handleSave}
                                         key={index}
-                                        id={block.block_title}
+                                        id={block.id}
                                         title={block.block_title}
                                         description={block.block_description}
-                                        img={block.image_url} index={index} />
+                                        img={block.image_url}
+                                        index={index}
+                                    />
                                 ))}
                             </SortableContext>
                         </DndContext>

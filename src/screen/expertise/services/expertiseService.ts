@@ -54,10 +54,11 @@ export const updateExpertiseData = async (
 };
 
 
-export const addExpertiseBlock = async (title: string, description: string, img: File, token: string) => {
+export const addExpertiseBlock = async (title: string, description: string, img: File, token: string, order_index: string) => {
   const formData = new FormData();
   formData.append('title', title);
   formData.append('description', description);
+  formData.append('order_index', order_index);
   formData.append('img', img);
 
   const response = await axios.post(`${API_URL}/expertise/block`, formData, {
@@ -65,6 +66,29 @@ export const addExpertiseBlock = async (title: string, description: string, img:
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
       },
+  });
+
+  return response.data;
+};
+
+export const updateExpertiseBlock = async (
+  id: string,
+  title?: string,
+  description?: string,
+  img?: File | null,
+  token?: string
+) => {
+  const formData = new FormData();
+
+  if (title !== undefined) formData.append('title', title);
+  if (description !== undefined) formData.append('description', description);
+  if (img) formData.append('img', img); 
+
+  const response = await axios.patch(`${API_URL}/expertise/block/content/${id}`, formData, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'multipart/form-data',
+    },
   });
 
   return response.data;
