@@ -19,10 +19,11 @@ interface SortableExpertiseItemProps {
     description: string;
     img: string;
     index: number;
-    handleSave: (id: string, data: { title: string; description: string; img: File | null }) => Promise<boolean>; // Modifié ici
+    handleSave: (id: string, data: { title: string; description: string; img: File | null }) => Promise<boolean>;
+    onDelete: (id: string) => void;
 }
 
-const SortableExpertiseItem: React.FC<SortableExpertiseItemProps> = ({ id, title, description, img, index, handleSave }) => {
+const SortableExpertiseItem: React.FC<SortableExpertiseItemProps> = ({ id, title, description, img, index, handleSave, onDelete }) => {
     const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
     const [editingBlock, setEditingBlock] = useState<boolean>(false);
     const [data, setData] = useState<{ title: string; description: string; img: File | null }>({
@@ -67,7 +68,12 @@ const SortableExpertiseItem: React.FC<SortableExpertiseItemProps> = ({ id, title
 
     const backgroundImageStyle = data && data.img ? { backgroundImage: `url(${URL.createObjectURL(data.img)})` } : { backgroundImage: `url(${img})` };
 
-
+    const Delete = () => {
+        const confirmed = window.confirm("Are you sure you want to delete this block?");
+        if (confirmed) {
+            onDelete(id);
+        }
+    };
     const Save = async () => {
         try {
             if (token === null) {
@@ -98,7 +104,7 @@ const SortableExpertiseItem: React.FC<SortableExpertiseItemProps> = ({ id, title
                             <IconButton onClick={() => setEditingBlock(true)} aria-label="edit" size="small">
                                 <EditIcon fontSize="small" style={{ color: colorActive }} />
                             </IconButton>
-                            <IconButton aria-label="delete" size="small">
+                            <IconButton onClick={Delete} aria-label="delete" size="small">
                                 <DeleteIcon fontSize="small" color="error" />
                             </IconButton>
                             <IconButton

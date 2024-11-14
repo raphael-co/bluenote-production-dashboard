@@ -93,3 +93,29 @@ export const updateExpertiseBlock = async (
 
   return response.data;
 };
+
+
+export const updateBlocksOrder = async (blocks: { id: string; order_index: number }[], token: string | null) => {
+  const response = await axios.patch(
+    `${API_URL}/expertise/block/order`,
+    { blocks },
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response.data;
+};
+
+
+export const deleteExpertiseBlock = async (id: string, token: string | null) => {
+  const response = await axios.delete(`${API_URL}/expertise/block/${id}`, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  });
+  return response.data;
+};

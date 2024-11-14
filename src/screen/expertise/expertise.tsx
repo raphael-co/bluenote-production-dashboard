@@ -7,7 +7,7 @@ import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import Snackbar from '@mui/material/Snackbar';
 import { CustomSnackbar } from '../tabs/Users';
 import { Severity } from '../../componnent/AddUserModal';
-import { addExpertiseBlock, getExpertiseData, submitExpertiseData, updateExpertiseBlock, updateExpertiseData } from './services/expertiseService';
+import { addExpertiseBlock, deleteExpertiseBlock, getExpertiseData, submitExpertiseData, updateBlocksOrder, updateExpertiseBlock, updateExpertiseData } from './services/expertiseService';
 import { useAuth } from '../../context/AuthContext';
 import axios from 'axios';
 import {
@@ -44,7 +44,7 @@ const Expertise: React.FC = () => {
     });
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const [blocks, setBlocks] = useState<{ id: string; image_url: string; block_title: string; block_description: string }[]>([
+    const [blocks, setBlocks] = useState<{ id: string; image_url: string; block_title: string; block_description: string, order_index: number }[]>([
     ]
     );
 
@@ -53,20 +53,43 @@ const Expertise: React.FC = () => {
         useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
     );
 
-    const handleDragEnd = (event: DragEndEvent) => {
+    const handleDragEnd = async (event: DragEndEvent) => {
         const { active, over } = event;
 
-        console.log(active, over);
-        
         if (over && active.id !== over.id) {
             setBlocks((items) => {
                 const oldIndex = items.findIndex((item) => item.id === active.id);
                 const newIndex = items.findIndex((item) => item.id === over.id);
-                return arrayMove(items, oldIndex, newIndex);
+                const updatedItems = arrayMove(items, oldIndex, newIndex);
+
+                // Met à jour les order_index en fonction du nouvel ordre
+                const reorderedItems = updatedItems.map((item, index) => ({
+                    ...item,
+                    order_index: index,
+                }));
+
+                // Sauvegarde des order_index mis à jour dans la base de données
+                if (token) {
+                    updateBlocksOrder(reorderedItems.map(({ id, order_index }) => ({ id, order_index })), token)
+                        .then((response) => {
+                            if (response.status === 'success') {
+                                setMessageStatus('success');
+                                setErrorMessage(response.message || 'Block added successfully');
+                            } else {
+                                setMessageStatus('error');
+                                setErrorMessage(response.message || 'An error occurred');
+                            }
+                        })
+                        .catch((error) => {
+                            console.error('Error updating order indices on server:', error);
+                        });
+                }
+
+                setOpenSnackbar(true);
+                return reorderedItems;
             });
         }
     };
-
     useEffect(() => {
         const fetchProjects = async () => {
             try {
@@ -153,6 +176,7 @@ const Expertise: React.FC = () => {
                             image_url: response.data.image_url, // Utilisez l'URL renvoyée par le backend
                             block_title: data.title,
                             block_description: data.description,
+                            order_index: blocks.length
                         },
                     ]);
 
@@ -231,6 +255,35 @@ const Expertise: React.FC = () => {
 
     };
 
+    const handleDelete = async (id: string) => {
+        if (!token) {
+            return false;
+        }
+    
+        try {
+            const response = await deleteExpertiseBlock(id, token);
+    
+            if (response.status === 'success') {
+                setBlocks((prevBlocks) => prevBlocks.filter((block) => block.id !== id));
+                setMessageStatus('success');
+                setErrorMessage(response.message || 'Block deleted successfully');
+            } else {
+                setMessageStatus('error');
+                setErrorMessage(response.message || 'An error occurred');
+            }
+        } catch (error) {
+            setMessageStatus('error');
+            setErrorMessage(
+                axios.isAxiosError(error) && error.response
+                    ? error.response.data.message || 'An error occurred'
+                    : 'Network error or server unavailable'
+            );
+        } finally {
+            setOpenSnackbar(true);
+        }
+    };
+    
+
     return (
         <div className="expertise-container">
             <div
@@ -295,6 +348,7 @@ const Expertise: React.FC = () => {
                                 {blocks.length > 0 && blocks.map((block, index) => (
                                     <SortableExpertiseItem
                                         handleSave={handleSave}
+                                        onDelete={handleDelete}
                                         key={index}
                                         id={block.id}
                                         title={block.block_title}
